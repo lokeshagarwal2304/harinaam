@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>हरिनाम - Digital Naam Lekhan Slate</title>
+    <style>
+        :root {
+            --bg-cream: #FFFBF2;
+            --card-bg: #FFFFFF;
+            --primary-saffron: #C94A29;
+            --primary-dark: #9C2A0C;
+            --accent-gold: #D97706;
+            --gold-light: #FEF3C7;
+            --text-dark: #2C1810;
+            --text-muted: #78350F;
+            --border-warm: #EEDCC4;
+            --slate-grid: #F5E6D3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            background: #FFFFFF;
+            border-bottom: 1.5px solid var(--border-warm);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(201, 74, 41, 0.06);
+            z-index: 20;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-saffron), var(--accent-gold));
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(201, 74, 41, 0.25);
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-saffron);
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lang-select {
+            background: var(--gold-light);
+            border: 1px solid var(--accent-gold);
+            color: var(--text-dark);
+            padding: 5px 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .btn-header-clear {
+            background: #FFF1EE;
+            border: 1.5px solid #F87171;
+            color: #DC2626;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-header-clear:active {
+            transform: scale(0.95);
+            background: #FEE2E2;
+        }
+
+        /* Mantra Selector Bar */
+        .mantra-bar {
+            background: #FFF9ED;
+            border-bottom: 1px solid var(--border-warm);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .mantra-chip {
+            padding: 6px 14px;
+            background: #FFFFFF;
+            border: 1px solid var(--border-warm);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mantra-chip.active {
+            background: var(--primary-saffron);
+            color: #FFFFFF;
+            border-color: var(--primary-saffron);
+            box-shadow: 0 2px 6px rgba(201, 74, 41, 0.3);
+        }
+
+        /* Counter Summary Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 12px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-warm);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-saffron);
+        }
+
+        /* Main Writing Area */
+        .slate-container {
+            flex: 1;
+            position: relative;
+            background: var(--bg-cream);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .slate-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            opacity: 0.35;
+            transition: opacity 0.3s;
+        }
+
+        .placeholder-text {
+            font-size: 64px;
+            font-weight: 900;
+            color: #C94A29;
+            letter-spacing: 2px;
+        }
+
+        .placeholder-hint {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Float Alerts */
+        .toast-banner {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #FEF3C7;
+            border: 1.5px solid #D97706;
+            color: #92400E;
+            padding: 8px 18px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease;
+            z-index: 50;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .toast-banner.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Bottom Action Bar */
+        .action-bar {
+            background: #FFFFFF;
+            border-top: 1.5px solid var(--border-warm);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+            z-index: 20;
+        }
+
+        .btn-large-clear {
+            flex: 1;
+            background: #FFF1EE;
+            border: 2px solid #F87171;
+            color: #DC2626;
+            font-weight: 800;
+            font-size: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+        }
+        .btn-large-clear:active {
+            transform: scale(0.97);
+            background: #FEE2E2;
+        }
+
+        .btn-darshan {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-saffron), var(--accent-gold));
+            color: #FFFFFF;
+            border: none;
+            font-weight: 800;
+            font-size: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(201, 74, 41, 0.3);
+        }
+        .btn-darshan:active {
+            transform: scale(0.97);
+        }
+
+        /* Darshan Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding: 16px;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #FFFDF9;
+            width: 100%;
+            max-width: 400px;
+            max-height: 85vh;
+            border-radius: 20px;
+            border: 2px solid var(--accent-gold);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #C94A29, #D97706);
+            color: #FFF;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #FFF;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .darshan-card {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-warm);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .darshan-icon {
+            font-size: 38px;
+            margin-bottom: 6px;
+        }
+        .darshan-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary-saffron);
+        }
+        .darshan-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-brand">
+            <div class="brand-icon">🕉</div>
+            <div class="brand-title" id="appTitle">हरिनाम</div>
+        </div>
+        <div class="header-actions">
+            <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
+                <option value="hi">हिन्दी</option>
+                <option value="en">English</option>
+                <option value="te">తెలుగు</option>
+                <option value="ta">தமிழ்</option>
+                <option value="kn">ಕನ್ನಡ</option>
+            </select>
+            <button class="btn-header-clear" onclick="clearSlate()">
+                <span>🔄</span>
+                <span id="headerClearText">साफ़ करें</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mantra Selector Bar -->
+    <div class="mantra-bar" id="mantraList">
+        <div class="mantra-chip active" onclick="selectMantra('राम', this)">श्री राम</div>
+        <div class="mantra-chip" onclick="selectMantra('हरे कृष्ण', this)">हरे कृष्ण</div>
+        <div class="mantra-chip" onclick="selectMantra('ॐ नमः शिवाय', this)">ॐ नमः शिवाय</div>
+        <div class="mantra-chip" onclick="selectMantra('जय श्री श्याम', this)">जय श्री श्याम</div>
+        <div class="mantra-chip" onclick="selectMantra('राधे राधे', this)">राधे राधे</div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-label" id="lblToday">आज का जप</div>
+            <div class="stat-value" id="todayCount">0</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label" id="lblMala">माला (108)</div>
+            <div class="stat-value" id="malaProgress">0/108</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label" id="lblTotal">कुल नाम</div>
+            <div class="stat-value" id="totalCount">0</div>
+        </div>
+    </div>
+
+    <!-- Main Slate -->
+    <div class="slate-container" id="slateContainer">
+        <div class="toast-banner" id="toastBanner">
+            <span>⚠️</span>
+            <span id="toastMsg">कृपया पूरा नाम लिखें (उदा. 'राम')</span>
+        </div>
+
+        <div class="slate-placeholder" id="placeholder">
+            <div class="placeholder-text" id="targetNamePlaceholder">राम</div>
+            <div class="placeholder-hint" id="targetHint">यहाँ उंगली या स्टाइलस से लिखें</div>
+        </div>
+
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="action-bar">
+        <button class="btn-large-clear" onclick="clearSlate()">
+            <span>🔄</span>
+            <span id="bottomClearText">साफ़ करें (Clear Slate)</span>
+        </button>
+        <button class="btn-darshan" onclick="openDarshanModal()">
+            <span>🙏</span>
+            <span id="darshanBtnText">भगवान दर्शन</span>
+        </button>
+    </div>
+
+    <!-- Darshan Modal -->
+    <div class="modal-overlay" id="darshanModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="darshanModalTitle">दिव्य भगवान दर्शन</div>
+                <button class="modal-close" onclick="closeDarshanModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="darshan-card">
+                    <div class="darshan-icon">🏹</div>
+                    <div class="darshan-name" id="godRama">भगवान श्रीराम</div>
+                    <div class="darshan-sub">मर्यादा पुरुषोत्तम</div>
+                </div>
+                <div class="darshan-card">
+                    <div class="darshan-icon">🔱</div>
+                    <div class="darshan-name" id="godShiva">महादेव शिव</div>
+                    <div class="darshan-sub">भोलेनाथ कृपा</div>
+                </div>
+                <div class="darshan-card">
+                    <div class="darshan-icon">🦚</div>
+                    <div class="darshan-name" id="godKrishna">राधा कृष्ण</div>
+                    <div class="darshan-sub">प्रेम और भक्ति</div>
+                </div>
+                <div class="darshan-card">
+                    <div class="darshan-icon">🚩</div>
+                    <div class="darshan-name" id="godShyam">खाटू श्याम जी</div>
+                    <div class="darshan-sub">हारे का सहारा</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 5-Language Dictionary ---
+        const i18n = {
+            hi: {
+                title: "हरिनाम",
+                clear: "साफ़ करें",
+                clearFull: "साफ़ करें (Clear Slate)",
+                darshan: "भगवान दर्शन",
+                today: "आज का जप",
+                mala: "माला (108)",
+                total: "कुल नाम",
+                hint: "यहाँ उंगली या स्टाइलस से लिखें",
+                alertPartial: "कृपया पूरा नाम लिखें (उदा. 'राम')",
+                alertDot: "अधूरा स्ट्रोक - पुनः लिखें",
+                darshanTitle: "दिव्य भगवान दर्शन",
+                godRama: "भगवान श्रीराम",
+                godShiva: "महादेव शिव",
+                godKrishna: "राधा कृष्ण",
+                godShyam: "खाटू श्याम जी"
+            },
+            en: {
+                title: "Harinaam",
+                clear: "Clear",
+                clearFull: "Clear Writing Slate",
+                darshan: "Divine Darshan",
+                today: "Today's Count",
+                mala: "Mala (108)",
+                total: "Total Holy Names",
+                hint: "Write here using finger or stylus",
+                alertPartial: "Please write the complete sacred name (e.g. 'RAM')",
+                alertDot: "Accidental touch - please write clearly",
+                darshanTitle: "Divine Blessings & Darshan",
+                godRama: "Lord Sri Rama",
+                godShiva: "Lord Shiva",
+                godKrishna: "Radha Krishna",
+                godShyam: "Khatu Shyam Ji"
+            },
+            te: {
+                title: "హరినామ్",
+                clear: "తుడిచివేయి",
+                clearFull: "పలకను క్లియర్ చేయండి",
+                darshan: "భగవంతుని దర్శనం",
+                today: "నేటి జపం",
+                mala: "మాల (108)",
+                total: "మొత్తం నామాలు",
+                hint: "ఇక్కడ వేలు లేదా స్టైలస్‌తో వ్రాయండి",
+                alertPartial: "దయచేసి పూర్తి పవిత్ర నామాన్ని వ్రాయండి",
+                alertDot: "అసంపూర్ణ స్పర్శ - మళ్లీ వ్రాయండి",
+                darshanTitle: "దివ్య భగవత్ దర్శనం",
+                godRama: "శ్రీరామ చంద్రుడు",
+                godShiva: "మహాదేవ శివుడు",
+                godKrishna: "రాధా కృష్ణ",
+                godShyam: "ఖాటూ శ్యామ్ జీ"
+            },
+            ta: {
+                title: "ஹரிநாம்",
+                clear: "அழி",
+                clearFull: "ஸ்லேட்டை அழிக்கவும்",
+                darshan: "தெய்வீக தரிசனம்",
+                today: "இன்றைய ஜபம்",
+                mala: "மாலை (108)",
+                total: "மொத்த நாமம்",
+                hint: "விரல் அல்லது ஸ்டைலஸால் எழுதவும்",
+                alertPartial: "முழு நாமத்தை எழுதவும் (எ.கா. 'ராம்')",
+                alertDot: "முழுமையற்ற தொடுதல் - மீண்டும் எழுதவும்",
+                darshanTitle: "புனித தெய்வ தரிசனம்",
+                godRama: "ஸ்ரீ ராமர்",
+                godShiva: "சிவபெருமான்",
+                godKrishna: "ராதா கிருஷ்ணர்",
+                godShyam: "காட்டு ஷ்யாம் ஜி"
+            },
+            kn: {
+                title: "ಹರಿನಾಮ",
+                clear: "ಅಳಿಸು",
+                clearFull: "ಹಲಗೆಯನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸಿ",
+                darshan: "ದೇವರ ದರ್ಶನ",
+                today: "ಇಂದಿನ ಜಪ",
+                mala: "ಮಾಲೆ (108)",
+                total: "ಒಟ್ಟು ನಾಮಗಳು",
+                hint: "ಬೆರಳು ಅಥವಾ ಸ್ಟೈಲಸ್ ಬಳಸಿ ಬರೆಯಿರಿ",
+                alertPartial: "ದಯವಿಟ್ಟು ಪೂರ್ಣ ಪವಿತ್ರ ನಾಮವನ್ನು ಬರೆಯಿರಿ",
+                alertDot: "ಅಪೂರ್ಣ ಸ್ಪರ್ಶ - ದಯವಿಟ್ಟು ಪುನಃ ಬರೆಯಿರಿ",
+                darshanTitle: "ಪವಿತ್ರ ದೈವಿಕ ದರ್ಶನ",
+                godRama: "ಶ್ರೀ ರಾಮಚಂದ್ರ",
+                godShiva: "ಮಹಾದೇವ ಶಿವ",
+                godKrishna: "ರಾಧಾ ಕೃಷ್ಣ",
+                godShyam: "ಖಾಟು ಶ್ಯಾಮ್ ಜಿ"
+            }
+        };
+
+        let currentLang = 'hi';
+        let currentMantra = 'राम';
+
+        // Counters
+        let todayCount = parseInt(localStorage.getItem('hn_today') || '0', 10);
+        let totalCount = parseInt(localStorage.getItem('hn_total') || '0', 10);
+
+        // Canvas Setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const placeholder = document.getElementById('placeholder');
+        const toastBanner = document.getElementById('toastBanner');
+
+        let isDrawing = false;
+        let strokes = []; // Array of points
+        let commitTimer = null;
+
+        function resizeCanvas() {
+            const container = document.getElementById('slateContainer');
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+            redrawStrokes();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top,
+                time: Date.now()
+            };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            placeholder.style.opacity = '0.08';
+            if (commitTimer) clearTimeout(commitTimer);
+
+            const pos = getPos(e);
+            strokes.push([pos]);
+
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 6.5;
+            ctx.strokeStyle = '#C94A29';
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            const currentStroke = strokes[strokes.length - 1];
+            currentStroke.push(pos);
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            // Trigger auto-commit after 750ms of inactivity
+            if (commitTimer) clearTimeout(commitTimer);
+            commitTimer = setTimeout(processRecognitionAndCommit, 750);
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing, { passive: false });
+
+        function redrawStrokes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 6.5;
+            ctx.strokeStyle = '#C94A29';
+
+            for (const stroke of strokes) {
+                if (stroke.length === 0) continue;
+                ctx.beginPath();
+                ctx.moveTo(stroke[0].x, stroke[0].y);
+                for (let i = 1; i < stroke.length; i++) {
+                    ctx.lineTo(stroke[i].x, stroke[i].y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        // --- Strict Character Completeness Recognizer ---
+        function analyzeStrokeCompleteness() {
+            if (strokes.length === 0) return { valid: false, reason: 'empty' };
+
+            let allPoints = [];
+            let totalLength = 0;
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+
+            for (const stroke of strokes) {
+                for (let i = 0; i < stroke.length; i++) {
+                    const pt = stroke[i];
+                    allPoints.push(pt);
+                    if (pt.x < minX) minX = pt.x;
+                    if (pt.x > maxX) maxX = pt.x;
+                    if (pt.y < minY) minY = pt.y;
+                    if (pt.y > maxY) maxY = pt.y;
+
+                    if (i > 0) {
+                        const prev = stroke[i - 1];
+                        totalLength += Math.hypot(pt.x - prev.x, pt.y - prev.y);
+                    }
+                }
+            }
+
+            const width = maxX - minX;
+            const height = maxY - minY;
+
+            // Reject tiny dots/accidental taps
+            if (totalLength < 45 || (width < 30 && height < 30)) {
+                return { valid: false, reason: 'dot' };
+            }
+
+            // Devanagari Multi-cluster analysis for full word 'राम' vs partial 'रा'
+            const midX = minX + (width / 2);
+            let leftPoints = 0;
+            let rightPoints = 0;
+
+            for (const pt of allPoints) {
+                if (pt.x < midX) leftPoints++;
+                else rightPoints++;
+            }
+
+            const leftRatio = leftPoints / allPoints.length;
+            const rightRatio = rightPoints / allPoints.length;
+
+            // 'राम' needs horizontal distribution across span (both 'रा' and 'म')
+            if (width < 50 || leftRatio < 0.15 || rightRatio < 0.15) {
+                return { valid: false, reason: 'partial' };
+            }
+
+            return { valid: true };
+        }
+
+        function showToast(msg) {
+            document.getElementById('toastMsg').innerText = msg;
+            toastBanner.classList.add('show');
+            setTimeout(() => {
+                toastBanner.classList.remove('show');
+            }, 2400);
+        }
+
+        function processRecognitionAndCommit() {
+            const result = analyzeStrokeCompleteness();
+            const dict = i18n[currentLang];
+
+            if (!result.valid) {
+                if (result.reason === 'dot') {
+                    showToast(dict.alertDot);
+                    clearSlate(false);
+                } else if (result.reason === 'partial') {
+                    showToast(dict.alertPartial);
+                }
+                return;
+            }
+
+            // Valid sacred name written! Increment Counters!
+            todayCount++;
+            totalCount++;
+            localStorage.setItem('hn_today', todayCount);
+            localStorage.setItem('hn_total', totalCount);
+            updateUI();
+
+            // Haptic vibration feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(40);
+            }
+
+            // Smooth slate reset for next holy chant
+            clearSlate(true);
+        }
+
+        function clearSlate(animate = true) {
+            strokes = [];
+            if (commitTimer) clearTimeout(commitTimer);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            placeholder.style.opacity = '0.35';
+        }
+
+        function updateUI() {
+            document.getElementById('todayCount').innerText = todayCount;
+            document.getElementById('totalCount').innerText = totalCount;
+            const malaNumber = todayCount % 108;
+            document.getElementById('malaProgress').innerText = `${malaNumber}/108`;
+        }
+
+        function selectMantra(name, el) {
+            currentMantra = name;
+            document.querySelectorAll('.mantra-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('targetNamePlaceholder').innerText = name;
+            clearSlate();
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const dict = i18n[lang];
+            document.getElementById('appTitle').innerText = dict.title;
+            document.getElementById('headerClearText').innerText = dict.clear;
+            document.getElementById('bottomClearText').innerText = dict.clearFull;
+            document.getElementById('darshanBtnText').innerText = dict.darshan;
+            document.getElementById('lblToday').innerText = dict.today;
+            document.getElementById('lblMala').innerText = dict.mala;
+            document.getElementById('lblTotal').innerText = dict.total;
+            document.getElementById('targetHint').innerText = dict.hint;
+            document.getElementById('darshanModalTitle').innerText = dict.darshanTitle;
+            document.getElementById('godRama').innerText = dict.godRama;
+            document.getElementById('godShiva').innerText = dict.godShiva;
+            document.getElementById('godKrishna').innerText = dict.godKrishna;
+            document.getElementById('godShyam').innerText = dict.godShyam;
+        }
+
+        function openDarshanModal() {
+            document.getElementById('darshanModal').classList.add('open');
+        }
+
+        function closeDarshanModal() {
+            document.getElementById('darshanModal').classList.remove('open');
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            resizeCanvas();
+            updateUI();
+        };
+    </script>
+</body>
+</html>

@@ -1,10 +1,7 @@
 package com.harinaam.app
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Bitmap
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -22,15 +19,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private var backPressedTime: Long = 0
 
-    // Default target URL (Vercel Live URL or fallback)
-    private val appUrl = "https://harinaam.vercel.app"
+    // Bundled Offline Local Asset URL
+    private val localAppUrl = "file:///android_asset/www/index.html"
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Keep screen awake during spiritual naam lekhan
+        // Prevent screen sleep during spiritual naam lekhan
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         webView = findViewById(R.id.webView)
@@ -44,13 +41,8 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
-        if (isOnline()) {
-            webView.loadUrl(appUrl)
-        } else {
-            // Check cache or load offline view
-            webView.settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-            webView.loadUrl(appUrl)
-        }
+        // Load 100% offline standalone engine directly from local APK assets
+        webView.loadUrl(localAppUrl)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -61,15 +53,16 @@ class MainActivity : AppCompatActivity() {
         settings.databaseEnabled = true
         settings.allowFileAccess = true
         settings.allowContentAccess = true
+        settings.allowFileAccessFromFileURLs = true
+        settings.allowUniversalAccessFromFileURLs = true
         settings.useWideViewPort = true
         settings.loadWithOverviewMode = true
         settings.setSupportZoom(false)
         settings.builtInZoomControls = false
         settings.displayZoomControls = false
-        settings.cacheMode = WebSettings.LOAD_DEFAULT
-        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        settings.cacheMode = WebSettings.LOAD_NO_CACHE
 
-        // Render tuning for ultra smooth stylus & touch strokes
+        // Hardware accelerated canvas rendering for stylus & finger writing
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         webView.isScrollbarFadingEnabled = true
         webView.overScrollMode = View.OVER_SCROLL_NEVER
@@ -84,18 +77,6 @@ class MainActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
                 swipeRefresh.isRefreshing = false
                 super.onPageFinished(view, url)
-            }
-
-            override fun onReceivedError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                error: WebResourceError?
-            ) {
-                if (request?.isForMainFrame == true) {
-                    // Try to load cached page
-                    settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-                }
-                super.onReceivedError(view, request, error)
             }
         }
 
@@ -124,12 +105,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-    private fun isOnline(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }

@@ -35,35 +35,35 @@ jobs:
       - name: Prepare APK Output
         run: |
           mkdir -p build-output
-          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/Harinaam-Android-v1.0.0.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/Harinaam-Android-v1.0.1.apk
           echo "APK Build Completed Successfully."
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Harinaam-Android-v1.0.0-APK
-          path: build-output/Harinaam-Android-v1.0.0.apk
+          name: Harinaam-Android-v1.0.1-APK
+          path: build-output/Harinaam-Android-v1.0.1.apk
           retention-days: 90
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/main')
         with:
-          tag_name: v1.0.0
-          name: "Harinaam Android APK v1.0.0"
+          tag_name: v1.0.1
+          name: "Harinaam Android APK v1.0.1 (Offline Standalone)"
           body: |
-            🕉️ **हरिनाम (Harinaam) - Official Android Standalone App**
+            🕉️ **हरिनाम (Harinaam) - Official Android Standalone App v1.0.1**
             
             ### 📥 Download & Install
-            1. Download `Harinaam-Android-v1.0.0.apk` below.
+            1. Download `Harinaam-Android-v1.0.1.apk` below.
             2. Tap and install directly on your Android phone.
             
-            ### ✨ Features
-            - **Spiritual Writing Slate**: Intelligent Hindi & Devanagari character recognition.
-            - **Zero Distraction UI**: Prominent clear button, warm pastel holy aesthetic.
+            ### ✨ What's New in v1.0.1:
+            - **100% Offline Standalone**: Opens directly from local device memory with zero 404 error and zero server dependency.
+            - **Spiritual Writing Slate**: Smart Devanagari character recognition with auto-commit.
+            - **Prominent Clear Buttons**: Fast canvas clearing from top header and bottom bar.
             - **5 Indian Regional Languages**: Hindi, English, Telugu, Tamil, Kannada.
-            - **Offline Support**: Writes and saves chanting count locally even with zero internet.
-            - **Screen WakeLock**: Prevents screen from going to sleep while doing Naam Jap.
-          files: build-output/Harinaam-Android-v1.0.0.apk
+            - **Screen WakeLock**: Prevents screen sleep while chanting and writing.
+          files: build-output/Harinaam-Android-v1.0.1.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
