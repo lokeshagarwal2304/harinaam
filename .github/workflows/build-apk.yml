@@ -5,6 +5,9 @@ on:
     branches: [ "master", "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -19,28 +22,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.4
         uses: gradle/actions/setup-gradle@v3
-
-      - name: Grant Execute Permission for Gradlew
-        run: |
-          cd android
-          if [ -f "gradlew" ]; then
-            chmod +x gradlew
-          else
-            gradle wrapper
-            chmod +x gradlew
-          fi
+        with:
+          gradle-version: '8.4'
 
       - name: Build Android APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon --stacktrace
 
-      - name: Rename APK Output
+      - name: Prepare APK Output
         run: |
           mkdir -p build-output
           cp android/app/build/outputs/apk/debug/app-debug.apk build-output/Harinaam-Android-v1.0.0.apk
+          echo "APK Build Completed Successfully."
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -49,21 +45,25 @@ jobs:
           path: build-output/Harinaam-Android-v1.0.0.apk
           retention-days: 90
 
-      - name: Create GitHub Release with APK
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/main')
         with:
           tag_name: v1.0.0
-          name: "Harinaam Android APK v1.0.0 (Release)"
+          name: "Harinaam Android APK v1.0.0"
           body: |
             🕉️ **हरिनाम (Harinaam) - Official Android Standalone App**
             
-            - **Download**: Click `Harinaam-Android-v1.0.0.apk` below to download and install on any Android phone.
-            - **Features**:
-              - Offline Naam Lekhan slate with intelligent Devanagari recognition
-              - God Darshan blessing cards
-              - Complete 5 regional languages (हिन्दी, English, తెలుగు, தமிழ், ಕನ್ನಡ)
-              - Automatic WakeLock to prevent screen sleep while writing
+            ### 📥 Download & Install
+            1. Download `Harinaam-Android-v1.0.0.apk` below.
+            2. Tap and install directly on your Android phone.
+            
+            ### ✨ Features
+            - **Spiritual Writing Slate**: Intelligent Hindi & Devanagari character recognition.
+            - **Zero Distraction UI**: Prominent clear button, warm pastel holy aesthetic.
+            - **5 Indian Regional Languages**: Hindi, English, Telugu, Tamil, Kannada.
+            - **Offline Support**: Writes and saves chanting count locally even with zero internet.
+            - **Screen WakeLock**: Prevents screen from going to sleep while doing Naam Jap.
           files: build-output/Harinaam-Android-v1.0.0.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
