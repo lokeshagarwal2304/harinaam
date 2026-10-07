@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_saffron">#C94A29</color>
+    <color name="primary_saffron_dark">#9C2A0C</color>
+    <color name="accent_gold">#D97706</color>
+    <color name="bg_cream">#FFFBF2</color>
+    <color name="text_dark">#2C1810</color>
+</resources>
