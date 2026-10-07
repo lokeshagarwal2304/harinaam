@@ -1,0 +1,53 @@
+services:
+  # Laravel REST API Web Service
+  - type: web
+    name: harinaam-api
+    runtime: docker
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: free
+    region: singapore
+    envVars:
+      - key: APP_NAME
+        value: Harinaam
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        fromService:
+          type: web
+          name: harinaam-api
+          property: host
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromDatabase:
+          name: harinaam-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: harinaam-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: harinaam-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: harinaam-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: harinaam-db
+          property: password
+
+databases:
+  # Free Managed Cloud MySQL Database
+  - name: harinaam-db
+    plan: free
+    region: singapore
+    databaseName: harinaam_db
+    user: harinaam_user
